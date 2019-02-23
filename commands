@@ -1,0 +1,24 @@
+$PACKAGE=lighttpd
+
+if  [ "x$(aptitude -q=10 search -F %p '~i ?name(^lighttpd$)')" == "xlightpd"  ]; then 
+  apt-get install lighttpd php-cgi
+fi
+
+
+# EXEC
+lighty-enable-mod fastcgi fastcgi-php
+
+# Restart
+systemctl restart lighttpd
+
+PATH=/var/www/html/index.php
+
+cat > $FILE_PATH << EOF
+<?php
+header("Content-Type: text/plain");
+echo "Hello, world!\n";
+?>
+EOF
+
+chown $FILE
+chmod $FILE
