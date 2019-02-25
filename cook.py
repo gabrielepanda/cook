@@ -1,17 +1,9 @@
-import pip
 import logging
 import sys
 import tempfile
-import site
 import subprocess
 import shlex
-
-try:
-    import yaml
-except ImportError:
-    pip.main(['install', '--user', 'yaml'])
-    site.getusersitepackages()
-    import yaml
+import yaml
 
 
 class BashGen():
@@ -74,7 +66,7 @@ class BashGen():
             self.handler_trigger(args['trigger'])
 
     def handler_service(self, args):
-        command = "systemctl {} {}".format(args['action'], args['service_name'])
+        command = "service {} {}".format(args['service_name'], args['action'])
         self.script.append(command)
 
     def generate(self):
@@ -98,7 +90,7 @@ class Host():
         for course_name in self.order:
             bash = BashGen(self.manus[course_name], self.triggers)
             print("applying configuration to host {}".format(self.address))
-            command = 'sshpass -p {} ssh -p {} {}@{} bash -x -s'.format(self.password, self.port, self.username, self.address)
+            command = 'sshpass -p {} ssh -p {}  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} bash -x -s'.format(self.password, self.port, self.username, self.address)
             command_args = shlex.split(command)
             streams = subprocess.Popen(command_args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             stdout, _ = streams.communicate(bash.generate().encode('utf-8'))
