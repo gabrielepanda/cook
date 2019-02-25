@@ -2,7 +2,7 @@ hosts:
     - address: localhost
       port: 22
       username: root
-      password: 
+      password:
       apply:
         - helloworld
 #    - address:
